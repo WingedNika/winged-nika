@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winged Nikka | Luxury Handmade Jewelries for Women</title>
+    <meta name="title" content="Winged Nikka | Luxury Handmade Jewelries for Women"/>
+    <meta name="description" content="Discover luxury handmade jewelries for women by Winged Nika. Ethically crafted bracelets, necklaces and earrings designed for elegance, strength and beauty."/>
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Winged Nikka™ — Luxury Crafted Identity" />
+    <meta property="og:description" content="Winged Nikka is a luxury brand identity defined by elegance, prestige, and timeless design. Discover refined aesthetics and premium craftsmanship." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://gpubgxknzrsqduenhscj.supabase.co/storage/v1/object/public/product-images/logo.png" />
+    <meta property="og:url" content="https://yourdomain.com/" />
+    <meta property="og:site_name" content="Winged Nikka" />
+    <meta name="robots" content="index, follow"/>
+    <link rel="canonical" href="yourdomain"/>
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <!-- Google Fonts: Playfair Display for serif, Inter for sans-serif -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Supabase CDN for client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <style>
+    /* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FAFAFA; /* Soft off-white */
+    color: #1A1A1A; /* Charcoal text */
+    line-height: 1.6;
+}
+
+h1, h2 {
+    font-family: 'Playfair Display', serif;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+}
+
+p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Hero Section */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background:  #1F4D3A;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 10px 0;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.nav__logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #D4AF37;
+}
+
+.nav__list {
+    display: flex;
+    list-style: none;
+}
+
+.nav__list li {
+    margin-left: 30px;
+}
+
+.nav__list a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s;
+    font-family:'Inter', sans-serif;
+}
+
+.nav__list a:hover {
+    color: #FF6B35;
+}
+
+.nav__cta {
+    margin-left: 30px;
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    background: #f5f5f5;
+}
+
+.hero__content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hero__content {
+    flex: 1 1 50%;
+    padding: 20px;
+}
+
+.hero-title h1{
+    color: #1F4D3A;
+}
+
+.hero__image {
+    flex: 1 1 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.hero__img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .hero__content-wrapper {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .hero__content, .hero__image {
+        flex: 1 1 100%;
+        padding: 10px;
+    }
+
+    .nav__list {
+        display: none;
+    }
+
+    .hero__title {
+        font-size: 2.5rem;
+    }
+
+    .hero__subtitle {
+        font-size: 1.2rem;
+    }
+}   
+
+#email-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+#email-input {
+    padding: 0.75rem;
+    border: 1px solid #C9A24D; /* Gold border */
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+#submit-btn {
+    background-color: #1F4D3A; /* Emerald Green */
+    color: #C9A24D; /* Gold text */
+    border: none;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+   
+}
+
+#submit-btn:hover {
+    box-shadow: 0 0 10px rgba(201, 162, 77, 0.5); /* Subtle gold glow */
+}
+
+#message {
+    margin-top: 1rem;
+    font-weight: 500;
+}
+
+/* Product Collection Section */
+.products {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.product-card {
+    background-color: #FFFFFF;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    text-align: center;
+}
+
+.product-card img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.product-card h3 {
+    margin-bottom: 0.5rem;
+    color: #1A1A1A;
+}
+
+.product-card p {
+    margin-bottom: 1rem;
+    color: #1F4D3A; /* Emerald */
+}
+
+.buy-btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #C9A24D; /* Gold border */
+    background-color: transparent;
+    color: #C9A24D;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.buy-btn:hover {
+    background-color: #C9A24D;
+    color: #FFFFFF;
+}
+
+/* My Story Section */
+.story {
+    padding: 4rem 2rem;
+}
+
+.story-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.story-image img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 8px;
+}
+
+.story-text {
+    text-align: center;
+}
+
+.story-text blockquote {
+    font-style: italic;
+    font-size: 1.5rem;
+    color: #C9A24D; /* Gold accent */
+    margin-top: 1rem;
+    position: relative;
+}
+
+.story-text blockquote::before {
+    content: '"';
+    font-size: 2rem;
+    position: absolute;
+    left: -20px;
+    top: -10px;
+}
+
+/* Socials / Connect Section */
+.connect {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.social-btn {
+    display: inline-block;
+    font-size: 3rem;
+    color: #C9A24D;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+}
+
+.social-btn:hover {
+    box-shadow: 0 0 10px rgba(201, 162, 77, 0.5); /* Subtle glow */
+}
+
+/* Footer */
+footer {
+    padding: 2rem;
+    text-align: center;
+    background-color: #1A1A1A;
+    color: #FFFFFF;
+}
+
+/* Hero Section Responsive Styles */
+
+
+@media (min-width: 768px) {
+    .hero-content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .hero-text {
+        flex: 1;
+        text-align: left;
+    }
+
+    .hero-image {
+        flex: 1;
+        text-align: right;
+        
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .story-container {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    .story-text {
+        text-align: left;
+    }
+
+    .story-image {
+        flex: 1;
+    }
+
+    .story-text {
+        flex: 1;
+    }
+
+    #email-form {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    #email-input {
+        flex: 1;
+    }
+
+    #submit-btn {
+        flex: 0 0 auto;
+        margin-left: 1rem;
+    }
+}
+
+/* Product Subsections Responsive Styles */
+.product-subsection {
+    margin-bottom: 2rem;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+  </style>
+    <!-- Hero Section -->
+     <header class="header">
+        <nav class="nav">
+            <div class="nav__logo" style="font-family:'Playfair Display';">WN</div>
+            <ul class="nav__list">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#story">Our Story</a></li>
+                <li><a href="#connect">Connect</a></li>
+                
+            </ul>
+            
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero__overlay"></div>
+        <div class="hero__content-wrapper">
+            <div class="hero__content">
+                <h1 class="hero__title" style="color:#1F4D3A;">Winged Nika </h1>
+                <h2 style="color:#C9A24D;">| Luxury Handmade Jewelry </h2>
+                <p class="hero__subtitle" style="font-family:'Playfair Display';">Luxury handmade jewelries for women — thoughtfully crafted to celebrate strength, beauty, and individuality in every piece.</p>
+                <form id="email-form">
+                    <input type="email" id="email-input" placeholder="Enter your email" required>
+                    <button type="submit" id="submit-btn">Join the Inner Circle</button>
+                </form>
+                <div id="message"></div>
+            </div>
+            <div class="hero__image">
+                <img src="https://gpubgxknzrsqduenhscj.supabase.co/storage/v1/object/public/product-images/hero.jpg" alt="Our Story" class="hero__img">
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Product Collection Section -->
+    <section class="products">
+        <h2>Product Collection</h2>
+
+        <!-- Bracelets Section -->
+        <div class="product-subsection">
+            <h3>Bracelets</h3>
+            <div class="product-grid">
+                
+            </div>
+        </div>
+
+        <!-- Earrings Section -->
+        <div class="product-subsection">
+            <h3>Earrings</h3>
+            <div class="product-grid">
+                
+                
+            </div>
+        </div>
+
+        <!-- Necklaces Section -->
+        <div class="product-subsection">
+            <h3>Necklaces</h3>
+            <div class="product-grid">
+                
+        </div>
+
+         <!-- Soap Section -->
+        <div class="product-subsection">
+            <h3>Soap</h3>
+            <div class="product-grid">
+                
+        </div>
+    </section>
+
+    <!-- My Story Section -->
+    <section class="story">
+        <div class="story-container">
+            <div class="story-image">
+                <img src="https://gpubgxknzrsqduenhscj.supabase.co/storage/v1/object/public/product-images/story.jpg" alt="My Story">
+            </div>
+            <div class="story-text">
+                <h2>My Story</h2>
+                <p>Winged Nika is a luxury handmade jewelry brand dedicated to creating timeless, meaningful designs for women who value authenticity and elegance. Each piece is carefully handcrafted using high-quality materials, blending artistic expression with refined craftsmanship. Our handmade jewelries for women are inspired by resilience, femininity, and self-empowerment — designed to be worn not just as accessories, but as symbols of confidence and individuality. From delicately crafted bracelets and necklaces to statement earrings, Winged Nika stands for ethical creation, lasting beauty, and luxury that feels personal.</p>
+                <blockquote>“I am not a victim. I am victorious.”</blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- Socials / Connect Section -->
+    <section class="connect">
+        <h2>Let’s Connect</h2>
+        <a href="https://ig.me/m/kasparovanarina?text=I%20want%201%20of%20Product%20Name" class="social-btn"><i class="fab fa-instagram"></i></a>
+        <p>Follow & DM to place orders</p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Winged Nika. All rights reserved.</p>
+    </footer>
+
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+
+  /* ==========================
+     SUPABASE CLIENT (SINGLE)
+     ========================== */
+
+  const supabaseUrl = 'https://gpubgxknzrsqduenhscj.supabase.co';
+  const supabaseKey = 'sb_publishable_pDmzDdCW56kOUVAvYJEp-g_CmRCAQtw';
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  /* ==========================
+     EMAIL COLLECTION (UNCHANGED)
+     ========================== */
+
+  const form = document.getElementById('email-form');
+  const emailInput = document.getElementById('email-input');
+  const messageDiv = document.getElementById('message');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = emailInput.value.trim();
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        messageDiv.textContent = 'Please enter a valid email address.';
+        messageDiv.style.color = 'red';
+        return;
+      }
+
+      messageDiv.textContent = '';
+
+      const { error } = await supabaseClient
+        .from('email_subscribers')
+        .insert([{ email }]);
+
+      if (error) {
+        if (error.code === '23505') {
+          messageDiv.textContent = 'This email is already on the waiting list.';
+        } else {
+          messageDiv.textContent = error.message;
+        }
+        messageDiv.style.color = 'red';
+        return;
+      }
+
+      messageDiv.textContent = 'Thank you! You’ve been added to the waiting list.';
+      messageDiv.style.color = 'green';
+      emailInput.value = '';
+    });
+  }
+
+  /* ==========================
+     PRODUCT FETCHING (UI SAFE)
+     ========================== */
+
+  // Find product grid by section title (robust & UI-safe)
+  function getSectionGridByTitle(title) {
+    const sections = document.querySelectorAll('.product-subsection');
+    for (const section of sections) {
+      const heading = section.querySelector('h3');
+      if (heading && heading.textContent.trim() === title) {
+        return section.querySelector('.product-grid');
+      }
+    }
+    return null;
+  }
+
+  // Map database categories → UI sections
+  const productSections = {
+    Bracelets: getSectionGridByTitle('Bracelets'),
+    Earrings: getSectionGridByTitle('Earrings'),
+    Necklaces: getSectionGridByTitle('Necklaces'),
+    Soap: getSectionGridByTitle('Soap')
+  };
+
+  async function fetchProducts() {
+    const { data: products, error } = await supabaseClient
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching products:', error);
+      return;
+    }
+
+    // Clear existing UI cards
+    Object.values(productSections).forEach(grid => {
+      if (grid) grid.innerHTML = '';
+    });
+
+    // Render products
+    products.forEach(product => {
+      if (!productSections[product.category]) {
+        console.warn(`Unknown category: ${product.category}`);
+        return;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'product-card';
+
+      card.innerHTML = `
+        <img src="${product.image_url}" alt="${product.name}">
+        <h4>${product.name}</h4>
+        <p>${product.description || ''}</p>
+        <p>$${product.price}</p>
+        <a href=" https://ig.me/m/kasparovanarina?text=I%20want%201%20of%20Product%20Name" class="buy-btn">Buy via Instagram</a>
+      `;
+
+      productSections[product.category].appendChild(card);
+    });
+  }
+
+  // Initial load
+  fetchProducts();
+
+});
+</script>
+   
+</body>
+</html>
