@@ -1,0 +1,5 @@
+User-agent:*
+Allow: /
+
+Sitemap:
+https://wingednika.github.io/winged-nika/sitemap.xml
