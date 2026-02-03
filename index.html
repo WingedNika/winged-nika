@@ -422,6 +422,52 @@ footer {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* =========================
+   CART BUTTON (DESKTOP + MOBILE)
+========================= */
+
+.cart-btn {
+    background-color: #1F4D3A;
+    border: 2px solid #C9A24D;
+    color: #C9A24D;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-btn i {
+    font-size: 1.2rem;
+}
+
+#cart-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #FF6B35;
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    display: none;
+}
+
+/* Always show cart button on mobile */
+@media (max-width: 768px) {
+    .nav {
+        justify-content: space-between;
+    }
+
+    .nav__cta {
+        display: flex;
+        align-items: center;
+    }
+}
+
   </style>
     <!-- Hero Section -->
      <header class="header">
@@ -433,9 +479,9 @@ footer {
                 <li><a href="#story">Our Story</a></li>
                 <li><a href="#connect">Connect</a></li>
 <div class="nav__cta">
-  <button id="cart-btn" style="position:relative;">
-    <i class="fas fa-shopping-cart" style="color:#C9A24D; font-size:1.5rem; background:#1F4D3A;"></i>
-    <span id="cart-count" style="position:absolute; top:-8px; right:-8px; background:#FF2400; color:#fff; border-radius:50%; padding:2px 6px; font-size:0.8rem; display:block;">0</span>
+  <button id="cart-btn" class="cart-btn">
+    <i class="fas fa-shopping-cart"></i>
+    <span id="cart-count">0</span>
   </button>
 </div>
                 
