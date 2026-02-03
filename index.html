@@ -575,8 +575,13 @@ footer {
     </footer>
 
    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
+
+<script type="module">
 document.addEventListener('DOMContentLoaded', async () => {
+
+  /* =====================
+     SUPABASE SETUP
+  ====================== */
 
   const supabaseUrl = 'https://gpubgxknzrsqduenhscj.supabase.co';
   const supabaseKey = 'sb_publishable_pDmzDdCW56kOUVAvYJEp-g_CmRCAQtw';
@@ -604,20 +609,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function renderCart() {
     cartItemsDiv.innerHTML = '';
+
     if (!cart.length) {
       cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
       return;
     }
+
     cart.forEach((item, index) => {
       const div = document.createElement('div');
       div.style.display = 'flex';
       div.style.justifyContent = 'space-between';
       div.style.alignItems = 'center';
       div.style.marginBottom = '0.5rem';
+
       div.innerHTML = `
         <span>${item.name} x ${item.quantity}</span>
-        <button data-index="${index}" style="background:none; border:none; color:red; font-size:1.2rem; cursor:pointer;">&times;</button>
+        <button data-index="${index}" style="background:none;border:none;color:red;font-size:1.2rem;cursor:pointer;">&times;</button>
       `;
+
       cartItemsDiv.appendChild(div);
     });
 
@@ -632,58 +641,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  cartBtn.addEventListener('click', () => {
+  cartBtn?.addEventListener('click', () => {
     renderCart();
     cartModal.style.display = 'flex';
   });
 
-  closeCart.addEventListener('click', () => {
+  closeCart?.addEventListener('click', () => {
     cartModal.style.display = 'none';
   });
 
-  checkoutForm.addEventListener('submit', async (e) => {
+  /* =====================
+     CHECKOUT (FORMSUBMIT)
+  ====================== */
+
+  checkoutForm?.addEventListener('submit', (e) => {
     e.preventDefault();
     if (!cart.length) return;
 
     const formData = new FormData(checkoutForm);
-    let message = 'Order Details:\n';
+
+    let message = '';
     cart.forEach(item => {
-      message += `- ${item.name} x ${item.quantity}\n`;
-    });
-    message += '\nCustomer Info:\n';
-    formData.forEach((value, key) => {
-      message += `${key}: ${value}\n`;
+      message += `${item.name} x ${item.quantity}\n`;
     });
 
-    const endpoint ='https://formsubmit.co/wingednikastore@gmail.com';  
-    const formData = new FormData(checkoutForm);
+    formData.append('Order Details', message);
+    formData.append('_subject', 'New Winged Nikka Order');
+    formData.append('_captcha', 'false');
+    formData.append('_template', 'table');
 
-formData.append('Order Details', message);
-formData.append('_subject', 'New Winged Nikka Order');
-formData.append('_captcha', 'false');
-formData.append('_template', 'table');
-
-fetch('https://formsubmit.co/wingednikastore@gmail.com', {
-  method: 'POST',
-  body: formData
-}).then(() => {
-  checkoutMessage.style.color = 'green';
-  checkoutMessage.textContent = 'Order placed successfully!';
-  cart = [];
-  localStorage.setItem('cart', JSON.stringify(cart));
-  renderCart();
-  updateCartUI();
-  checkoutForm.reset();
-}).catch(() => {
-  checkoutMessage.style.color = 'red';
-  checkoutMessage.textContent = 'Failed to send order. Please try again.';
-});
+    fetch('https://formsubmit.co/wingednikastore@gmail.com', {
+      method: 'POST',
+      body: formData
+    })
+    .then(() => {
+      checkoutMessage.style.color = 'green';
+      checkoutMessage.textContent = 'Order placed successfully!';
+      cart = [];
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+      updateCartUI();
+      checkoutForm.reset();
+    })
+    .catch(() => {
+      checkoutMessage.style.color = 'red';
+      checkoutMessage.textContent = 'Failed to send order. Please try again.';
+    });
   });
 
   updateCartUI();
 
   /* =====================
-     FETCH PRODUCTS AND REPLACE BUY BUTTON
+     PRODUCT SECTIONS
   ====================== */
 
   function getSectionGridByTitle(title) {
@@ -704,6 +713,10 @@ fetch('https://formsubmit.co/wingednikastore@gmail.com', {
     Soap: getSectionGridByTitle('Soap')
   };
 
+  /* =====================
+     FETCH PRODUCTS
+  ====================== */
+
   async function fetchProducts() {
     const { data: products, error } = await supabaseClient
       .from('products')
@@ -711,7 +724,7 @@ fetch('https://formsubmit.co/wingednikastore@gmail.com', {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching products:', error);
+      console.error('Supabase error:', error);
       return;
     }
 
@@ -720,21 +733,26 @@ fetch('https://formsubmit.co/wingednikastore@gmail.com', {
     });
 
     products.forEach(product => {
-      if (!productSections[product.category]) return;
+      const grid = productSections[product.category];
+      if (!grid) return;
 
       const card = document.createElement('div');
       card.className = 'product-card';
+
       card.innerHTML = `
         <img src="${product.image_url}" alt="${product.name}">
         <h4>${product.name}</h4>
         <p>${product.description || ''}</p>
         <p>$${product.price}</p>
-        <button class="add-btn" style="border:2px solid #C9A24D; background:transparent; color:#C9A24D; padding:0.5rem 1rem; border-radius:4px; cursor:pointer;">+</button>
+        <button class="add-btn"
+          style="border:2px solid #C9A24D;background:transparent;color:#C9A24D;padding:0.5rem 1rem;border-radius:4px;cursor:pointer;">
+          +
+        </button>
       `;
-      productSections[product.category].appendChild(card);
 
-      const addBtn = card.querySelector('.add-btn');
-      addBtn.addEventListener('click', () => {
+      grid.appendChild(card);
+
+      card.querySelector('.add-btn').addEventListener('click', () => {
         const existing = cart.find(item => item.id === product.id);
         if (existing) {
           existing.quantity++;
