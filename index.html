@@ -655,25 +655,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       message += `${key}: ${value}\n`;
     });
 
-    const endpoint ='https://formspree.io/f/xqelooqw  ';  
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
-    });
+    const endpoint ='https://formsubmit.co/wingednikastore@gmail.com';  
+    const formData = new FormData(checkoutForm);
 
-    if (res.ok) {
-      checkoutMessage.style.color = 'green';
-      checkoutMessage.textContent = 'Order sent successfully!';
-      cart = [];
-      localStorage.setItem('cart', JSON.stringify(cart));
-      renderCart();
-      updateCartUI();
-      checkoutForm.reset();
-    } else {
-      checkoutMessage.style.color = 'red';
-      checkoutMessage.textContent = 'Failed to send order. Please try again.';
-    }
+formData.append('Order Details', message);
+formData.append('_subject', 'New Winged Nikka Order');
+formData.append('_captcha', 'false');
+formData.append('_template', 'table');
+
+fetch('https://formsubmit.co/wingednikastore@gmail.com', {
+  method: 'POST',
+  body: formData
+}).then(() => {
+  checkoutMessage.style.color = 'green';
+  checkoutMessage.textContent = 'Order placed successfully!';
+  cart = [];
+  localStorage.setItem('cart', JSON.stringify(cart));
+  renderCart();
+  updateCartUI();
+  checkoutForm.reset();
+}).catch(() => {
+  checkoutMessage.style.color = 'red';
+  checkoutMessage.textContent = 'Failed to send order. Please try again.';
+});
   });
 
   updateCartUI();
