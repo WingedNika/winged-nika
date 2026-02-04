@@ -542,14 +542,14 @@ footer {
         <div class="product-subsection">
             <h3>Necklaces</h3>
             <div class="product-grid">
-                
+            </div>  
         </div>
 
          <!-- Soap Section -->
         <div class="product-subsection">
             <h3>Soap</h3>
             <div class="product-grid">
-                
+             </div>   
         </div>
     </section>
 
@@ -608,17 +608,9 @@ footer {
 <script type="module">
 document.addEventListener('DOMContentLoaded', async () => {
 
-  /* =====================
-     SUPABASE SETUP (UNCHANGED)
-  ====================== */
-
   const supabaseUrl = 'https://gpubgxknzrsqduenhscj.supabase.co';
   const supabaseKey = 'sb_publishable_pDmzDdCW56kOUVAvYJEp-g_CmRCAQtw';
   const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-  /* =====================
-     CART SYSTEM (UNCHANGED)
-  ====================== */
 
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -629,6 +621,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cartItemsDiv = document.getElementById('cart-items');
   const checkoutForm = document.getElementById('checkout-form');
   const checkoutMessage = document.getElementById('checkout-message');
+  const paypalStatus = document.getElementById('paypal-status');
 
   function updateCartUI() {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -638,27 +631,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function renderCart() {
     cartItemsDiv.innerHTML = '';
-
     if (!cart.length) {
       cartItemsDiv.innerHTML = '<p>Your cart is empty.</p>';
       return;
     }
-
     cart.forEach((item, index) => {
       const div = document.createElement('div');
       div.style.display = 'flex';
       div.style.justifyContent = 'space-between';
       div.style.alignItems = 'center';
       div.style.marginBottom = '0.5rem';
-
       div.innerHTML = `
         <span>${item.name} x ${item.quantity}</span>
         <button data-index="${index}" style="background:none;border:none;color:red;font-size:1.2rem;cursor:pointer;">&times;</button>
       `;
-
       cartItemsDiv.appendChild(div);
     });
-
     cartItemsDiv.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', () => {
         const idx = btn.getAttribute('data-index');
@@ -681,10 +669,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   updateCartUI();
 
-  /* =====================
-     CHECKOUT FORM (NO EMAIL)
-  ====================== */
-
   checkoutForm?.addEventListener('submit', (e) => {
     e.preventDefault();
     checkoutMessage.style.color = '#FF6B35';
@@ -692,13 +676,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       'Please complete payment using PayPal to place your order.';
   });
 
-  /* =====================
-     PAYPAL SMART BUTTONS (FIXED)
-  ====================== */
-
-  // Wait until PayPal SDK is loaded
+  // Wait for PayPal SDK
   function waitForPaypal() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const interval = setInterval(() => {
         if (window.paypal) {
           clearInterval(interval);
@@ -710,116 +690,54 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await waitForPaypal();
 
-  const paypalContainer = document.createElement('div');
-  paypalContainer.id = 'paypal-buttons';
-  checkoutForm.after(paypalContainer);
-
-  const paypalStatus = document.createElement('div');
-  paypalStatus.id = 'paypal-status';
-  paypalStatus.style.marginTop = '1rem';
-  paypalStatus.style.textAlign = 'center';
-  paypalContainer.after(paypalStatus);
-
   paypal.Buttons({
-    style: {
-      layout: 'vertical',
-      color: 'gold',
-      shape: 'rect',
-      label: 'paypal'
-    },
-
+    style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
     createOrder: (data, actions) => {
       if (!cart.length) {
         paypalStatus.style.color = 'red';
         paypalStatus.textContent = 'Your cart is empty.';
         return;
       }
-
-      // Calculate total from actual product prices in cart
-      const total = cart.reduce((sum, item) => {
-        return sum + (item.price ? item.price * item.quantity : 0);
-      }, 0);
-
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       return actions.order.create({
-        purchase_units: [{
-          amount: {
-            currency_code: 'USD',
-            value: total.toFixed(2)
-          }
-        }]
+        purchase_units: [{ amount: { currency_code: 'USD', value: total.toFixed(2) } }]
       });
     },
-
     onApprove: async (data, actions) => {
       const details = await actions.order.capture();
-
-      // Build paid order email
-      let message = 'PAID ORDER – Winged Nikka\n\n';
-      message += 'Order Items:\n';
-      cart.forEach(item => {
-        message += `• ${item.name} x ${item.quantity}\n`;
-      });
-
-      message += '\nCustomer Details:\n';
+      let message = 'PAID ORDER – Winged Nikka\n\nOrder Items:\n';
+      cart.forEach(item => { message += `• ${item.name} x ${item.quantity}\n`; });
       const formData = new FormData(checkoutForm);
-      formData.forEach((value, key) => {
-        message += `${key}: ${value}\n`;
-      });
-
-      message += `\nPayment ID: ${details.id}`;
-      message += `\nPayer Email: ${details.payer.email_address}`;
-
+      message += '\nCustomer Details:\n';
+      formData.forEach((value, key) => { message += `${key}: ${value}\n`; });
+      message += `\nPayment ID: ${details.id}\nPayer Email: ${details.payer.email_address}`;
       const emailData = new FormData();
       emailData.append('message', message);
       emailData.append('_subject', 'New PAID Order – Winged Nikka');
       emailData.append('_captcha', 'false');
-
       try {
-        await fetch('https://formsubmit.co/wingednikastore@gmail.com', {
-          method: 'POST',
-          body: emailData
-        });
-
+        await fetch('https://formsubmit.co/wingednikastore@gmail.com', { method: 'POST', body: emailData });
         paypalStatus.style.color = 'green';
-        paypalStatus.textContent =
-          'Payment successful! Your order has been placed.';
-
+        paypalStatus.textContent = 'Payment successful! Your order has been placed.';
         cart = [];
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartUI();
         renderCart();
         checkoutForm.reset();
-
-      } catch (err) {
+      } catch {
         paypalStatus.style.color = 'red';
-        paypalStatus.textContent =
-          'Payment succeeded but email failed. Please contact support.';
+        paypalStatus.textContent = 'Payment succeeded but email failed. Please contact support.';
       }
     },
-
-    onCancel: () => {
-      paypalStatus.style.color = '#FF6B35';
-      paypalStatus.textContent = 'Payment cancelled.';
-    },
-
-    onError: () => {
-      paypalStatus.style.color = 'red';
-      paypalStatus.textContent = 'Payment error. Please try again.';
-    }
-
+    onCancel: () => { paypalStatus.style.color = '#FF6B35'; paypalStatus.textContent = 'Payment cancelled.'; },
+    onError: () => { paypalStatus.style.color = 'red'; paypalStatus.textContent = 'Payment error. Please try again.'; }
   }).render('#paypal-buttons');
-
-  /* =====================
-     PRODUCT SECTIONS (UNCHANGED)
-  ====================== */
 
   function getSectionGridByTitle(title) {
     const sections = document.querySelectorAll('.product-subsection');
     for (const section of sections) {
       const heading = section.querySelector('h3');
-      if (heading && heading.textContent.trim() === title) {
-        return section.querySelector('.product-grid');
-      }
+      if (heading && heading.textContent.trim() === title) return section.querySelector('.product-grid');
     }
     return null;
   }
@@ -832,45 +750,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   async function fetchProducts() {
-    const { data: products, error } = await supabaseClient
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Supabase error:', error);
-      return;
-    }
-
-    Object.values(productSections).forEach(grid => {
-      if (grid) grid.innerHTML = '';
-    });
-
+    const { data: products, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+    if (error) { console.error('Supabase error:', error); return; }
+    Object.values(productSections).forEach(grid => { if (grid) grid.innerHTML = ''; });
     products.forEach(product => {
       const grid = productSections[product.category];
       if (!grid) return;
-
       const card = document.createElement('div');
       card.className = 'product-card';
-
       card.innerHTML = `
         <img src="${product.image_url}" alt="${product.name}">
         <h4>${product.name}</h4>
         <p>${product.description || ''}</p>
         <p>$${product.price}</p>
-        <button class="add-btn"
-          style="border:2px solid #C9A24D;background:transparent;color:#C9A24D;padding:0.5rem 1rem;border-radius:4px;cursor:pointer;">
-          +
-        </button>
+        <button class="add-btn" style="border:2px solid #C9A24D;background:transparent;color:#C9A24D;padding:0.5rem 1rem;border-radius:4px;cursor:pointer;">+</button>
       `;
-
       grid.appendChild(card);
-
       card.querySelector('.add-btn').addEventListener('click', () => {
         const existing = cart.find(item => item.id === product.id);
         if (existing) existing.quantity++;
         else cart.push({ id: product.id, name: product.name, price: product.price, quantity: 1 });
-
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartUI();
       });
