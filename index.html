@@ -1274,7 +1274,7 @@ border-color: #1A1A1A;
         <span class="hero__cta-label">View New Collection SS '22</span>
         <button class="hero__cta-circle" id="hero-shop-btn">→</button>
       </div>
-      
+
     </div>
     <div class="hero__right">
       <div class="hero__arch">
@@ -1381,9 +1381,9 @@ border-color: #1A1A1A;
       </div>
       <div class="footer-col">
         <h4>Contact</h4>
-        
-        <a href="mailto:wingednikastore@gmail.com">wingednikastore@gmail.com</a>
-        
+
+        <a href="/cdn-cgi/l/email-protection#83f4eaede4e6e7edeae8e2f0f7ecf1e6c3e4eee2eaefade0ecee"><span class="__cf_email__" data-cfemail="9cebf5f2fbf9f8f2f5f7fdefe8f3eef9dcfbf1fdf5f0b2fff3f1">[email&#160;protected]</span></a>
+
       </div>
       <div class="footer-col">
         <h4>Newsletter subscription</h4>
@@ -1483,7 +1483,7 @@ border-color: #1A1A1A;
 </div>
 
 <!-- PayPal SDK -->
-<script src="https://www.paypal.com/sdk/js?client-id=AVWE8o9VMYBQbO4LcgNssp-p4s8LQemYKJewXqO2ENw2uVhNVFSywRvvx-r89Uty_On41O7mH8aAbxN0&currency=USD&enable-funding=venmo"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://www.paypal.com/sdk/js?client-id=AVWE8o9VMYBQbO4LcgNssp-p4s8LQemYKJewXqO2ENw2uVhNVFSywRvvx-r89Uty_On41O7mH8aAbxN0&currency=USD&enable-funding=venmo"></script>
 
 <script type="module">
 
@@ -1541,7 +1541,7 @@ const BASE_STEPS = [
       { id: 'lapis',             name: 'Lapis',                              price: 14 },
       { id: 'howlite',           name: 'Howlite',                            price: 10 },
       { id: 'aventurine',        name: 'Aventurine',                         price: 7  }
-      
+
     ]
   },
   // stone_color step is dynamically inserted here when Agate or Jade is selected
@@ -1591,7 +1591,7 @@ const BASE_STEPS = [
       { id: 'bail_bead_gold',    name: 'Bail Bead Hanger — Gold',        price: 4  },
 { id: 'spacer_beads_silver',      name: 'Spacer Beads — Silver',   price: 3 },
 { id: 'spacer_beads_gold',      name: 'Spacer Beads —Gold',      price: 5 }
-      
+
     ]
   },
   {
@@ -1637,7 +1637,14 @@ function getCustomizerTotal() {
   getActiveSteps().forEach(step => {
     if (step.id === 'checkout') return;
     const sel = customizerSelections[step.id];
-    if (sel) {
+    if (!sel) return;
+    if (Array.isArray(sel)) {
+      // Multi-select step (plating) — sum all selected options
+      sel.forEach(id => {
+        const opt = step.options.find(o => o.id === id);
+        if (opt) total += opt.price;
+      });
+    } else {
       const opt = step.options.find(o => o.id === sel);
       if (opt) total += opt.price;
     }
@@ -1952,8 +1959,15 @@ function renderCustomizerStep() {
             getActiveSteps().forEach(s => {
               if (s.id === 'checkout') return;
               const sel = customizerSelections[s.id];
-              const opt = sel ? s.options.find(o => o.id === sel) : null;
-              selDesc += `• ${s.title}: ${opt ? opt.name : 'None'}\n`;
+              if (s.id === 'plating') {
+                const chosen = Array.isArray(sel) && sel.length
+                  ? sel.map(id => { const o = s.options.find(o => o.id === id); return o ? o.name : id; }).join(', ')
+                  : 'None';
+                selDesc += `• ${s.title}: ${chosen}\n`;
+              } else {
+                const opt = sel ? s.options.find(o => o.id === sel) : null;
+                selDesc += `• ${s.title}: ${opt ? opt.name : 'None'}\n`;
+              }
             });
             selDesc += `\nTotal: $${getCustomizerTotal().toFixed(2)}`;
             selDesc += `\n\nCustomer:\nName: ${name}\nEmail: ${email}\nPhone: ${phone}`;
@@ -1989,15 +2003,28 @@ function renderCustomizerStep() {
     const grid = document.createElement('div');
     grid.className = 'options-grid';
 
+    const isMulti = step.id === 'plating';
+
     step.options.forEach(opt => {
+      const isSelected = isMulti
+        ? (Array.isArray(customizerSelections[step.id]) && customizerSelections[step.id].includes(opt.id))
+        : customizerSelections[step.id] === opt.id;
+
       const card = document.createElement('div');
-      card.className = `option-card${customizerSelections[step.id] === opt.id ? ' selected' : ''}`;
+      card.className = `option-card${isSelected ? ' selected' : ''}`;
       card.innerHTML = `
         <div class="option-card__name">${opt.name}</div>
         <div class="option-card__price">${opt.price > 0 ? '+$' + opt.price : 'Included'}</div>
       `;
       card.addEventListener('click', () => {
-        customizerSelections[step.id] = opt.id;
+        if (isMulti) {
+          if (!Array.isArray(customizerSelections[step.id])) customizerSelections[step.id] = [];
+          const idx = customizerSelections[step.id].indexOf(opt.id);
+          if (idx === -1) customizerSelections[step.id].push(opt.id);
+          else customizerSelections[step.id].splice(idx, 1);
+        } else {
+          customizerSelections[step.id] = opt.id;
+        }
         renderCustomizerStep();
       });
       grid.appendChild(card);
@@ -2012,7 +2039,10 @@ function renderCustomizerStep() {
   prevBtn.style.display = customizerCurrentStep === 0 ? 'none' : 'block';
   nextBtn.style.display = customizerCurrentStep === totalSteps - 1 ? 'none' : 'block';
 
-  const stepHasSelection = step.id === 'checkout' || !!customizerSelections[step.id];
+  const stepHasSelection = step.id === 'checkout'
+    || (step.id === 'plating'
+        ? Array.isArray(customizerSelections['plating']) && customizerSelections['plating'].length > 0
+        : !!customizerSelections[step.id]);
   nextBtn.disabled = !stepHasSelection;
 }
 
